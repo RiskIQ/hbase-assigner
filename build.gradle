@@ -1,0 +1,80 @@
+buildscript {
+    repositories {
+        mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath 'org.owasp:dependency-check-gradle:3.1.1'
+        classpath("org.springframework.boot:spring-boot-gradle-plugin:${SPRING_BOOT_VERSION}")
+    }
+}
+
+apply plugin: "java"
+apply plugin: "idea"
+apply plugin: "org.owasp.dependencycheck"
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'org.springframework.boot'
+
+group 'com.riskiq'
+version PROJECT_VERSION
+
+sourceCompatibility = 1.8
+
+check.dependsOn dependencyCheckAnalyze
+
+idea {
+    module {
+        downloadJavadoc = true
+        downloadSources = true
+    }
+}
+
+bootJar {
+    launchScript()
+}
+
+bootRun {
+    systemProperties = System.properties
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    all*.exclude module: "spring-boot-starter-logging"
+    all*.exclude group: "log4j", module: "log4j"
+}
+
+dependencies {
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: SPRING_BOOT_VERSION
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: SPRING_BOOT_VERSION
+    compile group: 'org.springframework.boot', name: 'spring-boot-starter-log4j2', version: SPRING_BOOT_VERSION
+
+    compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-yaml', version: JACKSON_VERSION
+
+    compile group: 'org.apache.logging.log4j', name: 'log4j-1.2-api', version: '2.11.2'
+
+    compile group: "in.ashwanthkumar", name: "slack-java-webhook", version: "0.0.9"
+    compile group: 'com.github.mfornos', name: 'humanize-slim', version: '1.2.2'
+
+    compile group: "org.apache.hbase", name: "hbase-client", version: HBASE_VERSION
+    // HBase requires guava 14 due to breaking changes in the Stopwatch API
+    compile ("com.google.guava:guava:14.0.1") {
+        force = true
+    }
+
+    annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+    testCompile("org.springframework.boot:spring-boot-starter-test:$SPRING_BOOT_VERSION")
+    testCompile group: 'com.github.charithe', name: 'hbase-junit-rule', version: '1.0.2'
+    testCompile "org.apache.hbase:hbase-server:${HBASE_VERSION}"
+}
+
+compileJava.dependsOn(processResources)
+
+wrapper {
+    distributionType = Wrapper.DistributionType.ALL
+}

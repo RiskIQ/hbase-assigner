@@ -1,0 +1,15 @@
+Configuration:
+  status: info
+
+  Appenders:
+    Console:
+      name: Console
+      target: SYSTEM_OUT
+      PatternLayout:
+        Pattern: "%d{HH:mm:ss,SSS} [%t] %highlight{%-5level}{FATAL=red blink, ERROR=red, WARN=yellow bold, INFO=black, DEBUG=green bold, TRACE=blue} %logger{1} %class{1}.%method(%L) - %msg%n"
+
+  Loggers:
+    Root:
+      level: info
+      AppenderRef:
+        ref: Console
