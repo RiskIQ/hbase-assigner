@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/RiskIQ/hbase-assigner.svg?branch=master)](https://travis-ci.org/RiskIQ/hbase-assigner)
+
 # HBase Region Assigner
 During the course of normal HBase operation, table regions will occasionally become unassigned when regions are 
 transitioned from one regionserver to another.  As long a region remains unassigned, the data contained therein will 
